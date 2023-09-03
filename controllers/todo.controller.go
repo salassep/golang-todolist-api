@@ -42,7 +42,7 @@ func (tc *TodoController) CreateTodo(ctx *gin.Context) {
 }
 
 func (tc *TodoController) UpdateTodo(ctx *gin.Context) {
-	todoId := ctx.Param("postId")
+	todoId := ctx.Param("todoId")
 	currentUser := ctx.MustGet("currentUser").(models.User)
 
 	var payload *models.UpdateTodo
@@ -68,4 +68,17 @@ func (tc *TodoController) UpdateTodo(ctx *gin.Context) {
 	tc.DB.Model(&updatedTodo).Updates(todoToUpdate)
 
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": updatedTodo})
+}
+
+func (tc *TodoController) FindTodoById(ctx *gin.Context) {
+	todoId := ctx.Param("todoId")
+
+	var todo models.Todo
+	result := tc.DB.First(&todo, "id = ?", todoId)
+	if result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No todo found with that id"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": todo})
 }
