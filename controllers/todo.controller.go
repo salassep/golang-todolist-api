@@ -40,3 +40,32 @@ func (tc *TodoController) CreateTodo(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "message": newTodo})
 }
+
+func (tc *TodoController) UpdateTodo(ctx *gin.Context) {
+	todoId := ctx.Param("postId")
+	currentUser := ctx.MustGet("currentUser").(models.User)
+
+	var payload *models.UpdateTodo
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": err.Error()})
+	}
+
+	var updatedTodo models.Todo
+	result := tc.DB.First(&updatedTodo, "id = ?", todoId)
+	if result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No post with that title exists"})
+		return
+	}
+
+	now := time.Now()
+	todoToUpdate := models.Todo{
+		Title:     payload.Title,
+		User:      currentUser.ID,
+		CreatedAt: updatedTodo.CreatedAt,
+		UpdatedAt: now,
+	}
+
+	tc.DB.Model(&updatedTodo).Updates(todoToUpdate)
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": updatedTodo})
+}
