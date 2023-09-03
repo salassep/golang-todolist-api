@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -81,4 +82,21 @@ func (tc *TodoController) FindTodoById(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": todo})
+}
+
+func (tc *TodoController) FindTodos(ctx *gin.Context) {
+	var page = ctx.DefaultQuery("page", "1")
+	var limit = ctx.DefaultQuery("limit", "10")
+
+	intPage, _ := strconv.Atoi(page)
+	intLimit, _ := strconv.Atoi(limit)
+	offSet := (intPage - 1) * intLimit
+
+	var todos []models.Todo
+	results := tc.DB.Limit(intLimit).Offset(offSet).Find(&todos)
+	if results.Error != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": results.Error.Error()})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "results": len(todos), "data": todos})
 }
