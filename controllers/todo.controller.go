@@ -36,7 +36,8 @@ func (tc *TodoController) CreateTodo(ctx *gin.Context) {
 
 	result := tc.DB.Create(&newTodo)
 	if result.Error != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": result.Error.Error()})
+		return
 	}
 
 	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "message": newTodo})
@@ -49,6 +50,7 @@ func (tc *TodoController) UpdateTodo(ctx *gin.Context) {
 	var payload *models.UpdateTodo
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": err.Error()})
+		return
 	}
 
 	var updatedTodo models.Todo
@@ -96,6 +98,7 @@ func (tc *TodoController) FindTodos(ctx *gin.Context) {
 	results := tc.DB.Limit(intLimit).Offset(offSet).Find(&todos)
 	if results.Error != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": results.Error.Error()})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "results": len(todos), "data": todos})
