@@ -8,11 +8,16 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/salassep/golang-todolist-api/controllers"
 	"github.com/salassep/golang-todolist-api/initializers"
+	"github.com/salassep/golang-todolist-api/routes"
 )
 
 var (
-	server            *gin.Engine
-	SubTodoController controllers.SubTodoController
+	server              *gin.Engine
+	AuthController      controllers.AuthController
+	AuthRouteController routes.AuthRouteController
+
+	TodoController      controllers.TodoController
+	TodoRouteController routes.TodoRouteController
 )
 
 func init() {
@@ -23,7 +28,12 @@ func init() {
 
 	initializers.ConnectDB(&config)
 
-	// SubTodoController = controllers.NewSubTodoController(initializers.DB)
+	AuthController = controllers.NewAuthController(initializers.DB)
+	AuthRouteController = routes.NewAuthRouteController(AuthController)
+
+	TodoController = controllers.NewTodoController(initializers.DB)
+	TodoRouteController = routes.NewTodoRouteController(TodoController)
+
 	server = gin.Default()
 }
 
@@ -44,6 +54,9 @@ func main() {
 		message := "Welcome to golang with gorm and postgres"
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": message})
 	})
+
+	AuthRouteController.AuthRoute(router)
+	TodoRouteController.TodoRoute(router)
 
 	log.Fatal(server.Run(":" + config.ServerPort))
 }
