@@ -56,7 +56,7 @@ func (tc *TodoController) UpdateTodo(ctx *gin.Context) {
 	var updatedTodo models.Todo
 	result := tc.DB.First(&updatedTodo, "id = ?", todoId)
 	if result.Error != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No post with that title exists"})
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "Todo with that title exists"})
 		return
 	}
 
