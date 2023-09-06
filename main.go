@@ -18,6 +18,9 @@ var (
 
 	TodoController      controllers.TodoController
 	TodoRouteController routes.TodoRouteController
+
+	SubTodoController      controllers.SubTodoController
+	SubTodoRouteController routes.SubTodoRouteController
 )
 
 func init() {
@@ -33,6 +36,9 @@ func init() {
 
 	TodoController = controllers.NewTodoController(initializers.DB)
 	TodoRouteController = routes.NewTodoRouteController(TodoController)
+
+	SubTodoController = controllers.NewSubTodoController(initializers.DB)
+	SubTodoRouteController = routes.NewSubTodoRouteController(SubTodoController)
 
 	server = gin.Default()
 }
@@ -57,6 +63,7 @@ func main() {
 
 	AuthRouteController.AuthRoute(router)
 	TodoRouteController.TodoRoute(router)
+	SubTodoRouteController.SubTodoRoute(router)
 
 	log.Fatal(server.Run(":" + config.ServerPort))
 }
