@@ -18,4 +18,6 @@ func (rc *SubTodoRouteController) SubTodoRoute(rg *gin.RouterGroup) {
 	router := rg.Group("subtodo")
 	router.Use(middleware.DeserializeUser())
 	router.POST("/", rc.subTodoController.CreateSubTodo)
+	router.PUT("/:subTodoId", rc.subTodoController.UpdateSubTodo)
+	router.DELETE("/:subTodoId", rc.subTodoController.DeleteSubTodo)
 }
