@@ -110,7 +110,7 @@ func (tc *TodoController) DeleteTodo(ctx *gin.Context) {
 	result := tc.DB.Delete(&models.Todo{}, "id = ?", todoId)
 
 	if result.Error != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No todo found with that id"})
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": result.Error.Error()})
 		return
 	}
 
