@@ -114,5 +114,12 @@ func (tc *TodoController) DeleteTodo(ctx *gin.Context) {
 		return
 	}
 
+	result = tc.DB.Delete(&models.SubTodo{}, "todo = ?", todoId)
+
+	if result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": result.Error.Error()})
+		return
+	}
+
 	ctx.JSON(http.StatusNoContent, nil)
 }
