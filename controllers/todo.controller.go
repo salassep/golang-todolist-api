@@ -83,7 +83,15 @@ func (tc *TodoController) FindTodoById(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": todo})
+	var subTodo []models.SubTodo
+	result = tc.DB.Find(&subTodo, "todo = ?", todoId)
+
+	response := map[string]interface{}{
+		"todo":    todo,
+		"subtodo": subTodo,
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": response})
 }
 
 func (tc *TodoController) FindTodos(ctx *gin.Context) {
