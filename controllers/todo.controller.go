@@ -109,7 +109,22 @@ func (tc *TodoController) FindTodos(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"status": "success", "results": len(todos), "data": todos})
+	response := []map[string]interface{}{}
+
+	for _, v := range todos {
+		var subTodos []models.SubTodo
+		results = tc.DB.Find(&subTodos, "todo = ?", v.ID)
+		if results.Error != nil {
+			ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": results.Error.Error()})
+			return
+		}
+		response = append(response, map[string]interface{}{
+			"todo":     v,
+			"subtodos": subTodos,
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "results": len(todos), "data": response})
 }
 
 func (tc *TodoController) DeleteTodo(ctx *gin.Context) {
