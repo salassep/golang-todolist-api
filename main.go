@@ -57,7 +57,7 @@ func main() {
 
 	router := server.Group("/api")
 	router.GET("/healthchecker", func(ctx *gin.Context) {
-		message := "Welcome to golang with gorm and postgres"
+		message := "Welcome to Todolist API"
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": message})
 	})
 
